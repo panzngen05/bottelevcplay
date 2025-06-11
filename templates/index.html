@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Kontrol VC</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
+      padding: 2em;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      width: 300px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .controls {
+      margin-top: 2em;
+    }
+    .queue {
+      margin-top: 2em;
+      text-align: left;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Panel Kontrol Voice Chat</h1>
+  <form id="play-form">
+    <input type="text" id="query" placeholder="Masukkan judul lagu..." required />
+    <button type="submit">Putar</button>
+  </form>
+
+  <div class="controls">
+    <button onclick="sendAction('skip')">⏭ Skip</button>
+    <button onclick="sendAction('stop')">⏹ Stop</button>
+    <button onclick="refreshNow()">🎧 Now Playing</button>
+    <button onclick="refreshQueue()">📜 Queue</button>
+  </div>
+
+  <div class="queue" id="output"></div>
+
+  <script>
+    const API_BASE = "/";
+
+    document.getElementById("play-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const query = document.getElementById("query").value;
+      const res = await fetch(API_BASE + "play", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const data = await res.json();
+      document.getElementById("output").innerText = data.status === "playing"
+        ? `✅ Memutar: ${data.query}`
+        : `❌ Gagal: ${data.error || "Unknown error"}`;
+    });
+
+    async function sendAction(action) {
+      const res = await fetch(API_BASE + action, { method: "POST" });
+      const data = await res.json();
+      document.getElementById("output").innerText = `✅ ${data.status}`;
+    }
+
+    async function refreshQueue() {
+      const res = await fetch(API_BASE + "queue");
+      const data = await res.json();
+      document.getElementById("output").innerText =
+        data.queue.length ? `📜 Antrean:
+- ${data.queue.join("\n- ")}` : "📭 Queue kosong.";
+    }
+
+    async function refreshNow() {
+      const res = await fetch(API_BASE + "now");
+      const data = await res.json();
+      document.getElementById("output").innerText = `🎧 Sekarang diputar:
+${data.now_playing}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Panel VC</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; text-align: center; padding: 5em; }
+    input, button { padding: 10px; margin: 10px; width: 250px; border-radius: 5px; border: none; }
+    button { background-color: #28a745; color: white; }
+  </style>
+</head>
+<body>
+  <h1>🔒 Login Panel VC</h1>
+  {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+  <form method="POST">
+    <input type="password" name="password" placeholder="Masukkan password..." required>
+    <br>
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>
